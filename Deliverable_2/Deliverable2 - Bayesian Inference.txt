@@ -1,0 +1,227 @@
+                          University of Barcelona
+                          Faculty of Mathematics and Computer Science
+                          Bayesian Inference
+                          Deliverable 2
+
+
+
+
+1    Context
+
+In this deliverable, you will study a spatial search problem inspired by the recovery of a lost
+object at sea after an aerial accident. The search region is represented by a fixed rectangular
+grid. The true location of the object is unknown, and search missions provide only imperfect
+information.
+The goal of the assignment is to construct a Bayesian model on this grid. In particular, you will:
+
+    • build a prior distribution over the cells of the grid,
+
+    • define a detection model for search missions,
+
+    • update the prior using search outcomes,
+
+    • use the posterior distribution to propose a new search mission.
+
+The assignment is intentionally designed so that some ingredients are fixed and common to all
+students, while others must be modeled and justified by you.
+
+
+2    Provided data
+
+You will have access to the dataset grid_dataset, which describes the fixed grid used in the
+problem. Each row corresponds to one valid cell. The dataset contains the following columns:
+
+            Variable      Description
+            cell_id       unique identifier of the cell
+            x             x-coordinate of the center of the cell
+            y             y-coordinate of the center of the cell
+            depth         normalized depth associated with the cell
+            roughness     normalized seafloor roughness associated with the cell
+
+
+The dimensions of the grid are fixed and common to all students: the number of columns is
+Nx = 50 and the number of rows is Ny = 35. In addition, you will be given the following
+information about the accident in notebook format:
+
+    • the explosion point of the aircraft, expressed in grid coordinates,
+
+    • the aircraft velocity vector, expressed in grid units,
+
+
+                                                 1
+    • a wind vector,
+
+    • a water drift/current vector,
+
+    • two witness statements.
+
+You may use all, part, or none of this information in your modeling choices, but any choice
+must be justified.
+
+
+3    Fixed rules of the problem
+
+Some elements of the problem are fixed and must be used exactly as stated. In particular, the
+spatial discretization is not part of the modeling task: all students must work on the same grid
+and on the same cell-level dataset.
+A search mission t is defined by a searched region Rt ⊆ G, where G denotes the set of valid
+cells of the grid, together with an effort level et . Once a searched region has been selected, the
+coverage coefficient ctj for mission t and cell j is determined by
+                                              (
+                                                1, if j ∈ Rt ,
+                                        ctj =                                                   (1)
+                                                0, if j ∈/ Rt ,
+
+and the cost of mission t is defined by
+
+                                           costt = et |Rt |,                                      (2)
+
+where |Rt | denotes the number of cells in the searched region. A total budget B is imposed, so
+any admissible sequence of search missions must satisfy
+                                           T
+                                           X
+                                                 et |Rt | ≤ B.
+                                           t=1
+
+
+Finally, if the object is located in cell j, the detection probability of mission t must be modeled
+in the form
+                                              qtj = ctj ρtj ,                                   (3)
+where ρtj denotes the conditional probability of detection given that the cell is effectively covered.
+The functional form of ρtj is not fixed in advance: proposing, justifying, and implementing a
+reasonable model for this quantity is part of the assignment.
+
+
+4    Open modeling decisions
+
+The following components must be proposed and properly justified by you.
+
+
+Prior distribution
+
+You must define a prior distribution over the cells of the grid:
+
+                                      πj = P (Z = j) ∀j ∈ G,
+
+
+
+                                                    2
+where Z denotes the unknown true cell containing the object. Moreover, your prior must satisfy
+                                                       X
+                         πj ≥ 0 ∀j ∈ G,        and         πj = 1.
+                                                              j∈G
+
+The prior should be constructed from the information provided about the accident. You are free
+to decide whether all of these ingredients are useful in your model. However, your choice must
+be explained and justified.
+
+
+Detection model
+
+You must define a model for ρtj , the conditional probability of detection given coverage. You can
+gain further insight into the problem by reading the PDF file previous_missions_reports.pdf.
+You may use all, part, or none of this information, but your model must produce valid probabil-
+ities and must be justified.
+Mission reports from previous search attempts carried out in similar environments are not part
+of the formal dataset, but they may contain useful qualitative information about detectability.
+You may use this information to motivate the form of your detection model or to justify the
+expected qualitative effect of some variables.
+
+
+5    Search missions
+
+You will carry out search missions through the following webpage: https://search-missions.
+streamlit.app/. For each mission, you must specify a rectangular searched region by providing
+the bounds xmin , xmax , ymin , ymax , together with an effort level et . The webpage will then return
+
+                                             st ∈ {0, 1},
+
+where st = 1 means detection and st = 0 means no detection.
+These observed missions must then be used to update your prior and construct a posterior
+distribution over the grid. For the submission, you must also provide the file missions.csv,
+containing the history of your search missions together with their observed outcomes. The file
+must include the following fields:
+
+team_id, mission_id, x_min, x_max, y_min, y_max, effort, n_cells, cost, s_t, budget_remaining, timestamp
+
+
+
+6    Tasks – Brief Summary
+
+In summary, your work must address the following tasks.
+
+
+Task 1: Prior construction
+
+Construct a prior distribution {πj }j∈G over the grid cells. You must:
+
+    • explain how the provided physical and testimonial information is used,
+
+    • justify the modeling choices made,
+
+    • show a heatmap of the resulting prior distribution.
+
+                                                   3
+Task 2: Detection model
+
+Define a model for ρtj and therefore for
+                                            qtj = ctj ρtj .
+
+You must:
+
+    • explain the variables included in the model,
+    • justify the expected qualitative effect of each variable,
+    • ensure that the model returns valid probabilities.
+
+
+Task 3: Posterior update
+
+Using the observed search missions, update the prior and compute a posterior distribution over
+the grid. You must:
+
+    • derive the likelihood associated with your model,
+    • combine prior and likelihood to obtain the posterior,
+    • show a heatmap of the posterior distribution.
+
+
+Task 4: Next search mission
+
+Using your posterior distribution, propose one additional search mission. Your proposal must:
+
+    • specify a searched region RT +1 ,
+    • specify an effort level eT +1 ,
+    • respect the budget constraint,
+    • be justified using your current posterior beliefs.
+
+
+Task 5: Discussion
+
+Briefly discuss the main strengths of your model, the main limitations of your assumptions, and
+which elements of the model you would improve if more information were available.
+
+
+7    Submission format
+
+The submission must contain two separate parts. First, you must submit a short written report
+of at most two pages. This report should summarize only the most relevant aspects of your
+work, such as how the prior distribution is constructed, which model is used for the detection
+probability, and how the proposed new search missions are selected and justified.
+Second, you must submit a summary notebook containing the main figures, the essential code,
+and the basic elements needed to review the modeling and updating process. The notebook
+should make the workflow clear and reproducible, but it is not expected to include every inter-
+mediate exploration carried out during development. All figures and numerical results must be
+generated from the provided dataset and the code you submit.
+
+                                                  4
+8    Final remarks
+
+This deliverable is designed so that there is no single correct model. Different choices may be
+reasonable, provided they are mathematically coherent, well justified, and correctly implemented.
+The emphasis is placed not only on the final answer, but also on the quality of the probabilistic
+reasoning used to construct the model.
+
+
+
+
+                                               5
+
