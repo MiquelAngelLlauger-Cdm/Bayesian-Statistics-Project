@@ -1,0 +1,23 @@
+                          UNIVERSITY OF BARCELONA
+            Faculty of Mathematics and Computer Science
+             Bayesian Inference — Deliverable 2 Context
+           ---------------------------------------------
+              Search for Lost Object in a Spatial Grid
+
+This document describes the work and analysis conducted in the initial notebook "deliverable2.ipynb".
+
+1. Objectives & Context:
+The notebook serves as the initial setup and information-gathering environment for a spatial search problem inspired by the recovery of a lost object at sea following an aerial accident. The search region is discretized into a fixed 50x35 rectangular grid, where each cell is characterized by a unique identifier, spatial coordinates, and normalized depth and seafloor roughness variables (loaded from grid_dataset.csv).
+
+2. Core Inputs:
+- Accident Location: The aircraft explosion and initial reference point for subsequent spatial displacement is established at coordinates x_E = (7, 20).
+- Physical Vectors: The kinematics of the accident are represented by three main vectors:
+  * Aircraft velocity (momentum): v_plane = (6.0, -3.5)
+  * Wind vector (drift): v_wind = (-1.0, -1.5)
+  * Water drift/current vector: v_drift = (0.5, -1.5)
+- Qualitative Witness Statements: Two Distant observers' testimonies are provided, noting that the object continued forward roughly along the flight path but drifted slightly to one side of the main path.
+
+3. Fixed Rules vs. Open Modeling Decisions:
+The notebook clarifies the boundaries between the fixed constraints and open modeling decisions of the deliverable:
+- Fixed Elements: Grid dimensions, cell-level data, accident location, physical vectors, search cost rules (cost_t = e_t * |R_t|), and binary grid cell coverage.
+- Modeling Tasks: The student must construct a spatial prior over the grid, define a parameterized detection probability model, derive the likelihood and posterior update rules, and propose an optimal search strategy.

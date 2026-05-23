@@ -1,0 +1,24 @@
+                          UNIVERSITY OF BARCELONA
+            Faculty of Mathematics and Computer Science
+             Bayesian Inference — First Experiments Report
+           ---------------------------------------------
+              Search for Lost Object in a Spatial Grid
+
+This document describes the work and analysis conducted in the first experiment notebook "Deliverable2_MonteCarlo_Simulations.ipynb".
+
+1. Purpose & Objectives:
+This notebook implements our initial modeling choices and performs stochastic Monte Carlo campaign simulations to compare different search strategies and choose the optimal search policy for finding the bomb.
+
+2. Detection Probability Model Formulation:
+To represent search efficiency and environmental penalties (depth and roughness), the conditional probability of detection given cell coverage, \rho_{tj}, is formulated as:
+    \rho_{tj} = 1 - e^{-\lambda * e_t * \eta_j}
+where the search efficiency \eta_j in cell j is defined as:
+    \eta_j = 1 / (1 + \gamma_d * d_j + \gamma_r * r_j)
+The parameters were set heuristically to \lambda = 0.5 (effort scale), \gamma_d = 2.0 (depth penalty), and \gamma_r = 1.5 (roughness penalty).
+- Justification: Exponential returns reflect physical search effort saturation. The denominator represents physical efficiency penalties due to deep waters (\gamma_d) and irregular terrain (\gamma_r), aligning with historical mission reports.
+
+3. Search Policy Comparison via Monte Carlo Simulations:
+We defined the "SearchSimulator" class and evaluated three distinct search policies under different prior distributions (Baseline, Diffuse, and Drift-dominated) by simulating 100 search campaigns for each combination:
+- Greedy Probability of Containment (PoC): Purely focuses on spatial probability density. It was found to be highly inefficient as it ignores terrain constraints, searching "blindly" in deep and rugged regions, which leads to early budget depletion.
+- Greedy Probability of Detection (PoD): Maximizes discovery probability by incorporating depth and roughness penalties. However, it still ignores budget costs and often recommends massive bounding boxes that wipe out resources in one step.
+- Cost-Effective (PoD / Cost): Maximizes the Probability of Detection per unit of budget spent. This policy achieved the best overall performance in the simulations because it focuses search on small, high-density, highly visible bounding boxes under high effort (e_t = 3). This minimizes expenditure per step, leaving budget reserves for multiple sequential search missions and adaptive Bayesian updates.

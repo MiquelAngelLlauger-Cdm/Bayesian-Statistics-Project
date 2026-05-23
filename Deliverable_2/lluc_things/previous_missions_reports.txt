@@ -1,0 +1,71 @@
+                         University of Barcelona
+                         Faculty of Mathematics and Computer Science
+                         Bayesian Inference
+                         Previous Missions Report
+
+
+
+
+Introduction
+
+The following notes summarize a small number of previous search missions carried out in envi-
+ronments considered broadly similar to the one studied in this deliverable. These reports are
+qualitative and incomplete: they are not part of the formal dataset and should not be treated
+as exact calibration data.
+Their purpose is only to provide contextual information that may help you reason about how
+detectability could depend on mission effort and environmental conditions such as depth and
+seafloor roughness.
+
+
+Mission report 1
+
+A relatively large area was inspected with a low effort level. Most of the searched cells were
+located in a moderately deep zone with smooth or only mildly irregular terrain. No
+object was detected during the mission.
+The team responsible for the search noted that the covered area was wide, but that the inspection
+intensity was limited. Their conclusion was that the negative outcome could not be interpreted
+as strong evidence that the object was absent from the searched region.
+
+
+Mission report 2
+
+A smaller and more focused area was inspected with a high effort level. The region was
+described as shallow to moderately deep, with low roughness and relatively favorable
+inspection conditions. The object of interest was detected quickly after the beginning of the
+mission.
+The mission log emphasized that the combination of concentrated coverage, favorable terrain,
+and high effort appeared to produce a high detection capability.
+
+
+Mission report 3
+
+A mission with high effort was carried out over a region known to be deep and highly irreg-
+ular. Despite the intensity of the search, no object was detected.
+According to the final note of the report, the negative result was not considered surprising. The
+team highlighted that strong depth effects and rugged terrain may severely reduce the practical
+efficiency of the search, even when effort is high.
+
+
+                                               1
+Mission report 4
+
+A medium-sized region was inspected with intermediate effort. The environment was described
+as moderately shallow, but with noticeable seafloor irregularities. The search produced
+an uncertain outcome at first, and only after repeated inspection of the same area was a positive
+detection obtained.
+The report suggested that, under intermediate conditions, detectability may not be negligible,
+but can still be substantially lower than in smooth and shallow regions.
+
+
+General remark
+
+Taken together, these reports suggest that mission effort, depth, and roughness may all play a
+role in detectability. However, the reports do not determine a unique mathematical model, nor
+do they imply that every relevant variable must be used. Any model proposed in the deliverable
+should therefore be justified on probabilistic and practical grounds.
+
+
+
+
+                                               2
+

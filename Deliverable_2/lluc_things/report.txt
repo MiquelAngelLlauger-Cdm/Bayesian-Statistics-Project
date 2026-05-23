@@ -1,0 +1,56 @@
+                       UNIVERSITY OF BARCELONA
+            Faculty of Mathematics and Computer Science
+             Bayesian Inference — Deliverable 2 Report
+           ---------------------------------------------
+              Search for Lost Object in a Spatial Grid
+
+1. Executive Summary & Context
+This report summarizes a complete Bayesian modeling workflow designed to solve a spatial search problem inspired by the recovery of a lost aircraft object. The search area is discretized into a 50x35 grid with variable depths and seafloor roughness. Using physical principles, witness statements, and historical mission logs, we constructed a spatial prior, formulated a parameterized detection model, derived a Bayesian posterior update rule, and executed a sequence of optimal, cost-effective search campaigns. 
+
+To determine the best modeling decisions, we performed an extensive prior sensitivity study sweeping across 81 hyperparameter combinations, and evaluated search policies using stochastic Monte Carlo simulations. The resulting optimal strategy was executed interactively, strictly adhering to the total budget limit of 530 units. All search logs were recorded in missions.csv.
+
+2. Prior Distribution Construction (Task 1)
+The prior distribution represents our initial spatial belief regarding the object's containment probability. The aircraft exploded at coordinates x_E = (7, 20). Following the explosion, the object drifted due to kinetic momentum along the flight path v_plane = (6.0, -3.5) and environmental conditions v_wind = (-1.0, -1.5) and v_drift = (0.5, -1.5). We modeled the expected recovery location (mean vector \mu) using the displacement equation:
+    \mu = x_E + \alpha * v_plane + \beta * (v_wind + v_drift)
+
+To represent our spatial uncertainty, we modeled the prior as a 2D Bivariate Gaussian distribution N(\mu, \Sigma). The covariance matrix \Sigma was aligned with the flight trajectory using a 2D rotation matrix R(\theta), where \theta is the angle of the flight path. The variances along the principal longitudinal (\sigma_long) and transverse (\sigma_trans) axes were chosen to reflect larger uncertainty along the flight path.
+
+Prior Sensitivity Sweep:
+To validate our prior choices, we ran 100 stochastic Monte Carlo search campaigns using the Cost-Effective policy across all 81 combinations of the hyperparameters:
+    - \alpha \in {1, 2, 3} (momentum scale)
+    - \beta \in {0.5, 1, 1.5} (drift scale)
+    - \sigma_long \in {10, 15, 20} (longitudinal variance)
+    - \sigma_trans \in {5, 6, 8} (transverse variance)
+The sweep demonstrated that the baseline setup (\alpha = 1.5, \beta = 0.5, \sigma_long = 10.0, \sigma_trans = 6.0) achieves the most stable and physically consistent search performance, balancing success rate with average cost. This optimal prior map was selected as our final probability prior distribution.
+
+3. Parameterized Detection Model (Task 2)
+The conditional probability of detection given cell coverage, \rho_{tj}, must incorporate search effort (e_t) and environmental penalties (depth and roughness). We formulated the model as:
+    \rho_{tj} = 1 - e^{-\lambda * e_t * \eta_j}
+where the search efficiency \eta_j in cell j is defined as:
+    \eta_j = 1 / (1 + \gamma_d * d_j + \gamma_r * r_j)
+The parameters were set heuristically to \lambda = 0.5 (effort scale), \gamma_d = 2.0 (depth penalty), and \gamma_r = 1.5 (roughness penalty).
+
+Physical Justification:
+- Search Effort (e_t): The exponential saturation form reflects physical search returns; low effort (e_t = 1) yields highly inconclusive results (as in Mission Report 1), whereas high effort (e_t = 3) exponentially scales detectability (as in Mission Report 2).
+- Environmental Constraints (d_j, r_j): The penalties are placed in the denominator of the efficiency term. Deep water (d_j) and rugged terrain (r_j) severely bottleneck efficiency, making detection nearly impossible even under high effort, which is consistent with the "strong depth and rugged terrain effects" documented in Mission Report 3 and 4.
+The detectability map plotted for e_t = 3 visually demonstrates these penalties over the grid.
+
+4. Bayesian Posterior Update (Task 3)
+When a search mission t over a region R_t with effort e_t yields no detection (s_t = 0), we update our containment probability using Bayes' Rule:
+    \pi_j^{(t+1)} = P(Z = j | s_t = 0) = [ (1 - q_{tj}) * \pi_j^{(t)} ] / \sum_k [ (1 - q_{tk}) * \pi_k^{(t)} ]
+where Z is the true location cell, \pi_j^{(t)} is the prior/current probability in cell j, and q_{tj} = c_{tj} * \rho_{tj} is the detection probability (c_{tj} = 1 if j \in R_t, and 0 otherwise). This update rule dynamically suppresses containment probabilities in failed search regions and redistributes the probability mass to the unsearched areas of the grid.
+
+5. Interactive Search & Sequential Updates (Task 4)
+Policy Evaluation & Methodology:
+The final experiments and series of searches were decided after several trials of different modeling approaches and analyzing which decisions were better to take. In the first instance, I personally decided on the prior distribution based on the numerical physical information we had (momentum, wind, and drift vectors) and the witness statements. To evaluate our search strategy under this prior, we compared three search policies (Greedy PoC, Greedy PoD, and Cost-Effective) through stochastic Monte Carlo simulations. The Cost-Effective policy (maximizing PoD / Cost ratio) gave the best performance, because it focuses effort (e_t = 3) on compact, high-density, highly visible cells. This prevents budget depletion and leaves sufficient reserves to execute multiple sequential updates.
+
+Sequential Campaign Execution:
+The optimal search campaign series was executed interactively inside the Jupyter Notebook:
+- Initial Recommendation: For Mission 1, the optimal Cost-Effective policy recommended Bounding Box x \in [13.5, 15.5], y \in [12.5, 14.5] with effort e_t = 3 (cost = 27 units).
+- Active Exploration Loop: The first search was executed on the Streamlit web app. Upon failure (s_t = 0), the results were input into the tracker cell, which calculated the Bayesian update, plotted the new posterior distribution, wrote the entry to missions.csv, and automatically recommended the next optimal Cost-Effective search box.
+- This interactive loop was repeated for 5 sequential failed missions, tracking the budget at each step. This allowed us to systematically explore the highest posterior regions while maintaining an exact record of the budget depletion under the total constraint of 530 units.
+
+6. Discussion & Improvements (Task 5)
+Strengths: The model combines kinematics, drift, and environmental penalties into a mathematically sound, closed-loop Bayesian search planning tool.
+Limitations: The prior parameters (\alpha, \beta) and detection hyperparameters (\lambda, \gamma_d, \gamma_r) were chosen heuristically due to lack of historical calibration data.
+Improvements: If more calibration data were available, we could replace qualitative estimates with maximum likelihood estimation (MLE) fits for the sensor parameters, and utilize full Monte Carlo trajectory forecasting for prior construction.

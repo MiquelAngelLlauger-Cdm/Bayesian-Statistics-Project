@@ -1,0 +1,30 @@
+                          UNIVERSITY OF BARCELONA
+            Faculty of Mathematics and Computer Science
+             Bayesian Inference — Final Solution Report
+           ---------------------------------------------
+              Search for Lost Object in a Spatial Grid
+
+This document describes our final proposed solution based on the work conducted in "Deliverable2_Prior_Sensitivity_and_Missions.ipynb".
+
+1. Methodology and Decision-Making:
+Our final series of search campaigns and modeling decisions were finalized after several trials of different approaches. In the first instance, the prior distribution was decided based on the physical kinematics of the accident (momentum offsets) and testimonial drift vectors. The Cost-Effective search policy was selected because simulations confirmed it provides the most robust search success rate and sustainable budget usage compared to PoC and PoD.
+
+2. Prior Sensitivity Sweep (81 Combinations):
+To validate our prior hyperparameters, we ran a systematic prior sensitivity study in this notebook. We simulated 100 search campaigns with the Cost-Effective policy across all 81 combinations of the hyperparameters:
+- \alpha \in {1, 2, 3} (momentum scale)
+- \beta \in {0.5, 1, 1.5} (drift scale)
+- \sigma_long \in {10, 15, 20} (longitudinal variance)
+- \sigma_trans \in {5, 6, 8} (transverse variance)
+The sweep demonstrated that the baseline configuration (\alpha = 1.5, \beta = 0.5, \sigma_long = 10.0, \sigma_trans = 6.0) achieves the most stable and physically consistent search performance, balancing success rate with average cost. This optimal prior map was selected as our final probability prior distribution to guide the first search mission.
+
+3. Adaptive Detectability Map:
+The notebook incorporates a detectability heatmap which is fully adaptive to any search effort level (1, 2, or 3). By default, it displays the results for effort e_t = 3, illustrating how environmental depth and seafloor roughness penalize search efficiency across the grid.
+
+4. Interactive Mission Tracking & Bayesian Update Loop:
+To assist in active search planning, we implemented the "SearchMissionTracker" class. The total budget limit was updated to 530 units. The notebook provides 5 sequential interactive code cells. After running a search campaign on the Streamlit web app, the user enters their coordinates and outcome (success/failure) in the corresponding cell, which:
+- Computes the Bayesian posterior update using Bayes' Rule:
+  \pi_j^{(t+1)} = [ (1 - q_{tj}) * \pi_j^{(t)} ] / \sum_k [ (1 - q_{tk}) * \pi_k^{(t)} ]
+- Plots the updated posterior heatmap to visually show where the object is now most likely to be.
+- Appends the mission results directly to missions.csv.
+- Automatically calculates and recommends the next optimal cost-effective search box coordinates (x_min, x_max, y_min, y_max) under the remaining budget.
+This interactive loop was repeated for 5 sequential failed missions, tracking the budget at each step, and maintaining a complete record of the budget depletion under the total constraint of 530 units.
