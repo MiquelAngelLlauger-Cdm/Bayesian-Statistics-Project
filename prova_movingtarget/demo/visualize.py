@@ -209,8 +209,7 @@ def run(start_cell=None, horizon=10, p_stay=0.4, seed=None,
                         searcher_anim.place(sim.searcher_cell)
                     else:
                         searcher_anim.move_to(sim.searcher_cell, now, 600)
-                    if sim.searcher_cell not in visited:
-                        visited.append(sim.searcher_cell)
+                    visited.append(sim.searcher_cell)
                 next_searcher_ms = None
                 if still:
                     pending_sub_ms = now + SUB_DELAY
